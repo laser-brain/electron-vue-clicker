@@ -30,7 +30,7 @@ async function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
     frame: false,
-    // resizable: false,
+    resizable: false,
     alwaysOnTop: true,
     width: 200,
     height: 223,
