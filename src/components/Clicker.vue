@@ -44,7 +44,7 @@ export default {
           'Content-Type': 'application/json;charset=utf-8',
         },
         body: JSON.stringify({
-          user,
+          user: user.value,
         }),
       });
       const data = await response.json();
