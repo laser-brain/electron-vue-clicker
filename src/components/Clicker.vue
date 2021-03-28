@@ -16,52 +16,41 @@ import { ref } from 'vue';
 
 export default {
   name: 'Clicker',
-  async mounted() {
-    await this.init();
+  mounted() {
+    window.api.send('toMain', { event: 'get-clicks' });
   },
   setup() {
     const user = ref(localStorage.getItem('user'));
     const count = ref(0);
-    const serverUri = '<your-server-uri-here>';
-
-    const init = async () => {
-      const initResponse = await fetch(`${serverUri}/api/click`);
-      const initData = await initResponse.json();
-      count.value = initData.clicks;
-    };
-
-    const click = async () => {
-      if (!user.value) {
-        alert('You must set a user name!');
-        return;
-      }
-
-      localStorage.setItem('user', user.value);
-
-      const response = await fetch(`${serverUri}/api/click`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8',
-        },
-        body: JSON.stringify({
-          user: user.value,
-        }),
-      });
-      const data = await response.json();
-      count.value = data.clicks;
-    };
 
     const exit = () => {
       localStorage.setItem('user', user.value);
       window.api.send('toMain', { event: 'exit' });
     };
 
+    const click = () => {
+      if (!user.value) {
+        alert('You must set a user name!!');
+        return;
+      }
+
+      localStorage.setItem('user', user.value);
+
+      window.api.send('toMain', {
+        event: 'add-click',
+        data: { user: user.value },
+      });
+    };
+
+    window.api.receive('fromMain', (data) => {
+      count.value = data.clicks;
+    });
+
     return {
       count,
       user,
       click,
       exit,
-      init,
     };
   },
 };
@@ -151,7 +140,7 @@ button {
   }
 
   &:active {
-    transform: scale(.8);
+    transform: scale(0.8);
   }
 }
 

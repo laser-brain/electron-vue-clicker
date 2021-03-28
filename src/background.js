@@ -2,15 +2,16 @@ import {
   app,
   protocol,
   BrowserWindow,
-  ipcMain
+  ipcMain,
 } from 'electron';
 import {
-  createProtocol
+  createProtocol,
 } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, {
-  VUEJS_DEVTOOLS
+  VUEJS_DEVTOOLS,
 } from 'electron-devtools-installer';
 import path from 'path';
+import fetch from 'node-fetch';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -23,11 +24,13 @@ protocol.registerSchemesAsPrivileged([{
   },
 }]);
 
+let win;
+
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     frame: false,
-    resizable: false,
+    // resizable: false,
     alwaysOnTop: true,
     width: 200,
     height: 223,
@@ -99,11 +102,35 @@ if (isDevelopment) {
   }
 }
 
-ipcMain.on('toMain', (event, args) => {
+const serverUri = '<your-server-uri-here>';
+
+ipcMain.on('toMain', async (event, args) => {
+  console.log('main process received event: ', args.event);
   switch (args.event) {
-    case 'exit':
+    case 'exit': {
       app.quit();
       break;
+    }
+    case 'add-click': {
+      const response = await fetch(`${serverUri}/api/click`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        body: JSON.stringify({
+          user: args.data.user,
+        }),
+      });
+      const data = await response.json();
+      win.webContents.send('fromMain', data);
+      break;
+    }
+    case 'get-clicks': {
+      const response = await fetch(`${serverUri}/api/click`);
+      const data = await response.json();
+      win.webContents.send('fromMain', data);
+      break;
+    }
     default:
       break;
   }
