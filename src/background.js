@@ -27,6 +27,8 @@ async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     frame: false,
+    resizable: false,
+    alwaysOnTop: true,
     width: 200,
     height: 223,
     webPreferences: {
