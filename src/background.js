@@ -12,6 +12,7 @@ import installExtension, {
 } from 'electron-devtools-installer';
 import path from 'path';
 import fetch from 'node-fetch';
+import server from '../server.json';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -102,8 +103,6 @@ if (isDevelopment) {
   }
 }
 
-const serverUri = '<your-server-uri-here>';
-
 ipcMain.on('toMain', async (event, args) => {
   console.log('main process received event: ', args.event);
   switch (args.event) {
@@ -112,7 +111,7 @@ ipcMain.on('toMain', async (event, args) => {
       break;
     }
     case 'add-click': {
-      const response = await fetch(`${serverUri}/api/click`, {
+      const response = await fetch(`${server.uri}/api/click`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json;charset=utf-8',
@@ -126,7 +125,7 @@ ipcMain.on('toMain', async (event, args) => {
       break;
     }
     case 'get-clicks': {
-      const response = await fetch(`${serverUri}/api/click`);
+      const response = await fetch(`${server.uri}/api/click`);
       const data = await response.json();
       win.webContents.send('fromMain', data);
       break;
