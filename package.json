@@ -1,6 +1,11 @@
 {
-  "name": "electron-vue-clicker",
+  "name": "clicker",
   "version": "0.1.0",
+  "author": {
+    "name": "laser-brain",
+    "url": "https://github.com/laser-brain"
+  },
+  "description": "A small clicker app for tracking insults using vuejs and electron.",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
